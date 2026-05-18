@@ -1,58 +1,219 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistem Manajemen Perpustakaan — Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Tugas Pertemuan 9: Pengenalan Framework Laravel & MVC**
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🏫 Informasi Mata Kuliah
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Keterangan | Detail |
+|---|---|
+| **Mata Kuliah** | Pemrograman Website 2 |
+| **Kode MK** | INF2419 |
+| **Pertemuan** | 9 — Pengenalan Framework Laravel & MVC |
+| **Dosen Pengampu** | Mohammad Reza Maulana, M.Kom |
+| **Universitas** | UIN K.H. Abdurrahman Wahid Pekalongan |
+| **Program Studi** | Informatika |
+| **Semester** | Genap 2025/2026 |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 👤 Identitas Mahasiswa
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Keterangan | Detail |
+|---|---|
+| **Nama** | Gathan Hilabi |
+| **NIM** | 60324059 |
+| **Kelas** | Pemrograman Web II (A) |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 📋 Deskripsi Proyek
 
-## Agentic Development
+Proyek ini merupakan implementasi **Sistem Manajemen Perpustakaan** berbasis **Laravel 12** sebagai bagian dari tugas Pertemuan 9 mata kuliah Pemrograman Website 2. Sistem ini memperlihatkan penerapan arsitektur **MVC (Model-View-Controller)** menggunakan framework Laravel dengan fitur routing, Blade template engine, dan controller.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## ✅ Capaian Tugas
 
-php artisan boost:install
+### Tugas 1 — Routing dan View untuk Anggota (40%)
+- [x] Route `GET /anggota` — menampilkan daftar anggota
+- [x] Route `GET /anggota/{id}` — menampilkan detail anggota
+- [x] View `anggota/index.blade.php` — tabel daftar 5 anggota dengan Bootstrap 5
+- [x] View `anggota/show.blade.php` — card profil detail anggota
+
+### Tugas 2 — Controller untuk Kategori Buku (60%)
+- [x] Generate `KategoriController` via Artisan
+- [x] Method `index()` — daftar semua kategori
+- [x] Method `show($id)` — detail kategori beserta daftar buku
+- [x] Method `search($keyword)` — pencarian kategori
+- [x] View `kategori/index.blade.php` — card per kategori + search bar
+- [x] View `kategori/show.blade.php` — detail kategori + tabel buku
+- [x] View `kategori/search.blade.php` — hasil pencarian
+
+### Bonus — Master Layout (+10%)
+- [x] Membuat `layouts/app.blade.php` sebagai master layout
+- [x] Navbar sticky (`fixed-top`) di semua halaman
+- [x] Semua view menggunakan `@extends('layouts.app')`
+- [x] Menggunakan named routes (`route()`)
+
+---
+
+## 🗂️ Struktur Folder Proyek
+
+```
+perpustakaan/
+├── app/
+│   └── Http/
+│       └── Controllers/
+│           ├── DataBuku.php              ← Data terpusat buku
+│           ├── KategoriController.php    ← Controller kategori (Tugas 2)
+│           └── PerpustakaanController.php
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       │   └── app.blade.php             ← Master layout (Bonus)
+│       ├── anggota/
+│       │   ├── index.blade.php           ← Daftar anggota (Tugas 1)
+│       │   └── show.blade.php            ← Detail anggota (Tugas 1)
+│       ├── kategori/
+│       │   ├── index.blade.php           ← Daftar kategori (Tugas 2)
+│       │   └── show.blade.php            ← Detail kategori (Tugas 2)
+│       └── perpustakaan/
+│           ├── index.blade.php
+│           ├── show.blade.php
+│           └── about.blade.php
+└── routes/
+    └── web.php                           ← Semua route
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🚀 Cara Menjalankan Proyek
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prasyarat
+Pastikan sudah terinstall:
+- PHP >= 8.2
+- Composer
+- MySQL (via XAMPP)
+- Laravel 12
 
-## Code of Conduct
+### Langkah Instalasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**1. Clone repository**
+```bash
+git clone https://github.com/[username]/[nama-repo].git
+cd [nama-repo]
+```
 
-## Security Vulnerabilities
+**2. Install dependencies**
+```bash
+composer install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**3. Salin file environment**
+```bash
+cp .env.example .env
+```
 
-## License
+**4. Generate application key**
+```bash
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**5. Konfigurasi database di `.env`**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=perpustakaan_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+**6. Buat database di phpMyAdmin**
+
+Buka `http://localhost/phpmyadmin` → buat database baru: `perpustakaan_laravel`
+
+**7. Jalankan migrasi**
+```bash
+php artisan migrate
+```
+
+**8. Jalankan development server**
+```bash
+php artisan serve
+```
+
+**9. Buka di browser**
+```
+http://localhost:8000
+```
+
+---
+
+## 🌐 Daftar Route
+
+| Method | URL | Controller / Closure | Nama Route | Keterangan |
+|---|---|---|---|---|
+| GET | `/` | Closure | — | Halaman beranda |
+| GET | `/perpustakaan` | PerpustakaanController@index | `perpustakaan.index` | Daftar buku |
+| GET | `/buku/{id}` | PerpustakaanController@show | `buku.show` | Detail buku |
+| GET | `/about` | PerpustakaanController@about | `about` | Halaman about |
+| GET | `/anggota` | Closure | `anggota.index` | Daftar anggota |
+| GET | `/anggota/{id}` | Closure | `anggota.show` | Detail anggota |
+| GET | `/kategori` | KategoriController@index | `kategori.index` | Daftar kategori |
+| GET | `/kategori/{id}` | KategoriController@show | `kategori.show` | Detail kategori |
+
+---
+
+## 🖼️ Screenshot Hasil
+
+### Halaman Daftar Buku (`/perpustakaan`)
+> *![daftar buku](image.png)*
+
+### Halaman Detail Buku (`/buku/1`)
+> *![detail buku](image-1.png)*
+
+### Halaman Daftar Anggota (`/anggota`)
+> *![daftar anggota](image-2.png)*
+
+### Halaman Detail Anggota (`/anggota/1`)
+> *![detail anggota](image-3.png)*
+
+### Halaman Daftar Kategori (`/kategori`)
+> *![daftar kategori](image-4.png)*
+
+### Halaman Detail Kategori (`/kategori/1`)
+> *![detail kategori](image-5.png)*
+
+### Halaman About (`/about`)
+> *![about](image-6.png) ![about](image-7.png)*
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+| Teknologi | Versi |
+|---|---|
+| Laravel | 13.9 |
+| PHP | 8.5.3 |
+| MySQL | 8.0 |
+| Bootstrap | 5.3 |
+| Composer | 2.9.7 |
+
+---
+
+## 📝 Catatan
+
+- Data buku, anggota, dan kategori masih menggunakan array statis (belum dari database), karena implementasi Eloquent ORM dan Migration akan dilakukan pada **Pertemuan 10**
+- Arsitektur MVC sudah diterapkan: Controller mengelola logic, View menampilkan data, routing terpisah di `routes/web.php`
+- Semua view menggunakan master layout (`layouts/app.blade.php`) untuk konsistensi tampilan
+
+---
+
+## 🔗 Referensi
+
+- [Laravel 12 Documentation](https://laravel.com/docs/12.x)
+- [Modul Pertemuan 9 — Pemrograman Web 2](https://modul-belajar.vercel.app/pemrograman-web-2/pertemuan/pertemuan-9)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.3)
