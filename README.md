@@ -1,9 +1,9 @@
-# Pertemuan 10 - Database dengan Migration & Model
+# Pertemuan 11 - Controller & View (MVC Pattern)
 
 **Mata Kuliah:** Pemrograman Website 2  
 **Kode MK:** INF2419  
-**NIM:** [60324059]  
-**Nama:** [Gathan Hilabi]  
+**NIM:** 60324059  
+**Nama:** Gathan Hilabi  
 **Dosen:** Mohammad Reza Maulana, M.Kom  
 **Universitas:** UIN K.H. Abdurrahman Wahid Pekalongan
 
@@ -11,37 +11,49 @@
 
 ## Deskripsi
 
-Proyek ini merupakan implementasi Pertemuan 10 mata kuliah Pemrograman Website 2,
-yaitu pengelolaan database menggunakan Laravel Migration dan Eloquent ORM.
+Proyek ini merupakan implementasi Pertemuan 11 mata kuliah Pemrograman Website 2,
+yaitu implementasi pola MVC (Model-View-Controller) di Laravel 13.
+Fokus utama adalah pembuatan Controller, Blade Templating Engine, Blade Components,
+dan fitur Search & Filter Advanced.
 Studi kasus yang digunakan adalah Sistem Manajemen Perpustakaan.
 
 ---
 
-## Tugas 1 — Migration Tabel Kategori (40%)
+## Tugas 1 — Halaman Dashboard (30%)
 
-- [x] Migration tabel `kategori` (id, nama_kategori, deskripsi, icon, warna, timestamps)
-- [x] Model `Kategori` dengan `$fillable`
-- [x] `KategoriSeeder` — 5 data kategori buku
+- [x] `DashboardController` dengan method `index()`
+- [x] Route `/dashboard` terdaftar dengan nama `dashboard`
+- [x] Statistik buku: Total Buku, Buku Tersedia, Buku Habis
+- [x] Statistik anggota: Total Anggota, Anggota Aktif, Anggota Nonaktif
+- [x] List 5 buku terbaru (tabel dengan link ke detail)
+- [x] List 5 anggota terbaru (tabel dengan link ke detail)
+- [x] Quick links ke menu utama (Daftar Buku, Daftar Anggota, Tambah Buku, Tambah Anggota)
 
 ---
 
-## Tugas 2 — Model Accessor & Scope (60%)
+## Tugas 2 — Blade Component BukuCard (40%)
 
-### Model Buku
-- [x] Accessor `status_stok_badge` — badge warna berdasarkan jumlah stok (Habis / Menipis / Sedang / Aman)
-- [x] Accessor `tahun_label` — label Buku Baru / Buku Lama
-- [x] Scope `stokMenipis()` — filter buku dengan stok < 5
-- [x] Scope `hargaRange($min, $max)` — filter buku berdasarkan rentang harga
-- [x] Scope `terbaru()` — filter buku dengan tahun_terbit >= 2024
+- [x] Generate component dengan `php artisan make:component BukuCard`
+- [x] Property `$buku` (object Buku)
+- [x] Property `$showActions` (boolean, default `true`)
+- [x] Tampilan card: cover icon, judul, pengarang, harga, stok
+- [x] Badge kategori dengan warna dinamis menggunakan `match()`
+- [x] Badge status ketersediaan (Tersedia / Habis)
+- [x] Button Detail & Edit muncul hanya jika `$showActions = true`
+- [x] Component digunakan di halaman `buku/index.blade.php` (tampilan grid)
 
-### Model Anggota
-- [x] Accessor `status_badge` — badge warna status Aktif / Nonaktif
-- [x] Accessor `kategori_usia` — Remaja / Dewasa / Senior berdasarkan umur
-- [x] Scope `jenisKelamin($jk)` — filter anggota berdasarkan jenis kelamin
-- [x] Scope `terdaftarBulanIni()` — filter anggota yang mendaftar bulan ini
+---
 
-### Route Testing
-- [x] `/test-accessor-scope` — menampilkan hasil semua accessor dan scope
+## Tugas 3 — Search & Filter Buku Advanced (30%)
+
+- [x] Method `search(Request $request)` di `BukuController`
+- [x] Route `/buku/search` terdaftar dengan nama `buku.search`
+- [x] Filter keyword (mencari di kolom `judul`, `pengarang`, `penerbit`)
+- [x] Filter kategori (dropdown dinamis dari database)
+- [x] Filter tahun terbit (dropdown dinamis dari database)
+- [x] Filter ketersediaan (Semua / Tersedia / Habis)
+- [x] Form search tampil di halaman `buku/index.blade.php`
+- [x] Nilai filter tetap tampil (persistent) setelah form disubmit
 
 ---
 
@@ -49,13 +61,14 @@ Studi kasus yang digunakan adalah Sistem Manajemen Perpustakaan.
 
 | File | Keterangan |
 |------|------------|
-| `database/migrations/xxxx_create_kategori_table.php` | Migration tabel kategori |
-| `app/Models/Kategori.php` | Model Kategori |
-| `database/seeders/KategoriSeeder.php` | Seeder data kategori |
-| `database/seeders/DatabaseSeeder.php` | Registrasi semua seeder |
-| `app/Models/Buku.php` | Tambah accessor & scope |
-| `app/Models/Anggota.php` | Tambah accessor & scope |
-| `routes/web.php` | Tambah route /test-accessor-scope |
+| `app/Http/Controllers/DashboardController.php` | Controller dashboard — Tugas 1 |
+| `resources/views/dashboard/index.blade.php` | View halaman dashboard — Tugas 1 |
+| `app/View/Components/BukuCard.php` | Class Blade Component — Tugas 2 |
+| `resources/views/components/buku-card.blade.php` | Template Blade Component — Tugas 2 |
+| `app/Http/Controllers/BukuController.php` | Tambah method `search()` & update `index()` — Tugas 3 |
+| `resources/views/buku/index.blade.php` | Tambah form search & grid component — Tugas 2 & 3 |
+| `resources/views/layouts/navbar.blade.php` | Tambah link Dashboard di navbar |
+| `routes/web.php` | Tambah route `/dashboard` dan `/buku/search` |
 
 ---
 
@@ -79,6 +92,11 @@ php artisan key:generate
 ```
 
 ### 4. Konfigurasi database di `.env`
+```env
+DB_DATABASE=perpustakaan_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
 ### 5. Buat database di phpMyAdmin
 Buat database baru bernama `perpustakaan_laravel`
@@ -99,19 +117,32 @@ php artisan serve
 
 | URL | Keterangan |
 |-----|------------|
-| `/buku` | Daftar semua buku |
+| `/dashboard` | Halaman dashboard — Tugas 1 ✅ |
+| `/buku` | Daftar buku + form search + grid component |
+| `/buku/search?keyword=laravel` | Pencarian buku by keyword — Tugas 3 ✅ |
+| `/buku/search?kategori=Programming` | Filter by kategori — Tugas 3 ✅ |
+| `/buku/search?ketersediaan=tersedia` | Filter buku tersedia — Tugas 3 ✅ |
+| `/buku/search?tahun=2023` | Filter by tahun — Tugas 3 ✅ |
 | `/buku/{id}` | Detail buku |
-| `/anggota` | Daftar semua anggota |
+| `/anggota` | Daftar anggota |
 | `/anggota/{id}` | Detail anggota |
-| `/test-query` | Testing scope dasar |
-| `/test-accessor-scope` | Testing Tugas 2 ✅ |
 
 ---
 
 ## Screenshot
 
-### Tabel Kategori di phpMyAdmin
-![Tabel Kategori](![alt text](image.png))
+### Tugas 1 — Halaman Dashboard
+![Dashboard](screenshots/dashboard1.png)
+![Dashboard](screenshots/dashboard2.png)
+![Dashboard](screenshots/dashboard3.png)
 
-### Hasil /test-accessor-scope
-![Test Accessor Scope](![alt text](image-1.png)![alt text](image-2.png) ![alt text](image-3.png))
+### Tugas 2 — BukuCard Component (Grid View)
+![BukuCard Component](screenshots/buku-card-component.png)
+![BukuCard Component](screenshots/buku-card-component1.png)
+![BukuCard Component](screenshots/buku-card-component2.png)
+
+### Tugas 3 — Form Search & Filter Advanced
+![Search Form](screenshots/search-filter.png)
+
+### Tugas 3 — Hasil Pencarian
+![Hasil Search](screenshots/hasil-search.png)

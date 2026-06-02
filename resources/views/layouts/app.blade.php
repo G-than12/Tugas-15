@@ -4,65 +4,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Perpustakaan Laravel')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@yield('title', 'Perpustakaan') - Sistem Perpustakaan</title>
+
+    {{-- Bootstrap CSS --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {{-- Bootstrap Icons --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    {{-- Custom CSS --}}
     <style>
-        html {
-            overflow-y: scroll;
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        body {
-            padding-top: 66px;
+        main {
+            flex: 1;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        footer {
+            margin-top: auto;
+            background-color: #f8f9fa;
+            padding: 2rem 0;
         }
     </style>
+
+    @stack('styles')
 </head>
 
 <body>
+    {{-- Navbar --}}
+    @include('layouts.navbar')
 
-    {{-- NAVBAR STICKY --}}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    {{-- Main Content --}}
+    <main class="py-4">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">📚 Perpustakaan</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Beranda</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('perpustakaan*') || request()->is('buku*') ? 'active' : '' }}"
-                            href="{{ route('perpustakaan.index') }}">Buku</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('anggota*') ? 'active' : '' }}"
-                            href="{{ route('anggota.index') }}">Anggota</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('kategori*') ? 'active' : '' }}"
-                            href="{{ route('kategori.index') }}">Kategori</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('about') ? 'active' : '' }}"
-                            href="{{ route('about') }}">About</a>
-                    </li>
-                </ul>
-            </div>
+            {{-- Alert Messages --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle-fill"></i>
+                    {{ session('info') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            {{-- Page Content --}}
+            @yield('content')
         </div>
-    </nav>
+    </main>
 
-    {{-- KONTEN UTAMA --}}
-    <div class="container mt-4">
-        @yield('content')
-    </div>
+    {{-- Footer --}}
+    @include('layouts.footer')
 
-    {{-- FOOTER --}}
-    <footer class="bg-light text-center text-muted py-3 mt-5 border-top">
-        <small>© {{ date('Y') }} Sistem Perpustakaan — UIN K.H. Abdurrahman Wahid Pekalongan</small>
-    </footer>
+    {{-- Bootstrap JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 
 </html>

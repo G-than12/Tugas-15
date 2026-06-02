@@ -1,135 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BukuController;
+use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\DashboardController;
 use App\Models\Buku;
 use App\Models\Anggota;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
-// ========== TESTING BUKU ==========
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/buku', function () {
-    $bukus = Buku::all();
+// ========== RESOURCE ROUTES (PRAKTIKUM 2) ==========
 
-    $html = '<h1>Daftar Buku</h1>';
-    $html .= '<a href="/buku/create">Tambah Buku</a><br /><br />';
-    $html .= '<table border="1" cellpadding="10">';
-    $html .= '<tr>
-                <th>ID</th>
-                <th>Kode</th>
-                <th>Judul</th>
-                <th>Kategori</th>
-                <th>Harga</th>
-                <th>Stok</th>
-                <th>Aksi</th>
-              </tr>';
+// Custom route filter kategori HARUS di atas resource
+// agar tidak ditangkap oleh /buku/{buku}
+Route::get('/buku/kategori/{kategori}', [BukuController::class, 'filterKategori'])
+    ->name('buku.kategori');
 
-    foreach ($bukus as $buku) {
-        $html .= '<tr>';
-        $html .= '<td>' . $buku->id . '</td>';
-        $html .= '<td>' . $buku->kode_buku . '</td>';
-        $html .= '<td>' . $buku->judul . '</td>';
-        $html .= '<td>' . $buku->kategori . '</td>';
-        $html .= '<td>' . $buku->harga_format . '</td>';
-        $html .= '<td>' . $buku->stok . '</td>';
-        $html .= '<td>
-                    <a href="/buku/' . $buku->id . '">Detail</a> |
-                    <a href="/buku/' . $buku->id . '/edit">Edit</a>
-                  </td>';
-        $html .= '</tr>';
-    }
+Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search');
 
-    $html .= '</table>';
+// Resource route untuk Buku
+// Otomatis membuat: buku.index, buku.create, buku.store,
+//                   buku.show, buku.edit, buku.update, buku.destroy
+Route::resource('buku', BukuController::class);
 
-    return $html;
-});
+// Resource route untuk Anggota
+// Otomatis membuat: anggota.index, anggota.create, anggota.store,
+//                   anggota.show, anggota.edit, anggota.update, anggota.destroy
+Route::resource('anggota', AnggotaController::class);
 
-Route::get('/buku/{id}', function ($id) {
-    $buku = Buku::findOrFail($id);
-
-    $html = '<h1>Detail Buku</h1>';
-    $html .= '<a href="/buku">Kembali</a><br /><br />';
-    $html .= '<table border="1" cellpadding="10">';
-    $html .= '<tr><th>Field</th><th>Value</th></tr>';
-    $html .= '<tr><td>ID</td><td>' . $buku->id . '</td></tr>';
-    $html .= '<tr><td>Kode Buku</td><td>' . $buku->kode_buku . '</td></tr>';
-    $html .= '<tr><td>Judul</td><td>' . $buku->judul . '</td></tr>';
-    $html .= '<tr><td>Kategori</td><td>' . $buku->kategori . '</td></tr>';
-    $html .= '<tr><td>Pengarang</td><td>' . $buku->pengarang . '</td></tr>';
-    $html .= '<tr><td>Penerbit</td><td>' . $buku->penerbit . '</td></tr>';
-    $html .= '<tr><td>Tahun</td><td>' . $buku->tahun_terbit . '</td></tr>';
-    $html .= '<tr><td>ISBN</td><td>' . $buku->isbn . '</td></tr>';
-    $html .= '<tr><td>Harga</td><td>' . $buku->harga_format . '</td></tr>';
-    $html .= '<tr><td>Stok</td><td>' . $buku->stok . '</td></tr>';
-    $html .= '<tr><td>Tersedia?</td><td>' . ($buku->tersedia ? 'Ya' : 'Tidak') . '</td></tr>';
-    $html .= '<tr><td>Created</td><td>' . $buku->created_at . '</td></tr>';
-    $html .= '<tr><td>Updated</td><td>' . $buku->updated_at . '</td></tr>';
-    $html .= '</table>';
-
-    return $html;
-});
-
-// ========== TESTING ANGGOTA ==========
-
-Route::get('/anggota', function () {
-    $anggotas = Anggota::all();
-
-    $html = '<h1>Daftar Anggota</h1>';
-    $html .= '<table border="1" cellpadding="10">';
-    $html .= '<tr>
-                <th>ID</th>
-                <th>Kode</th>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Umur</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>';
-
-    foreach ($anggotas as $anggota) {
-        $html .= '<tr>';
-        $html .= '<td>' . $anggota->id . '</td>';
-        $html .= '<td>' . $anggota->kode_anggota . '</td>';
-        $html .= '<td>' . $anggota->nama . '</td>';
-        $html .= '<td>' . $anggota->email . '</td>';
-        $html .= '<td>' . $anggota->umur . ' tahun</td>';
-        $html .= '<td>' . $anggota->status . '</td>';
-        $html .= '<td><a href="/anggota/' . $anggota->id . '">Detail</a></td>';
-        $html .= '</tr>';
-    }
-
-    $html .= '</table>';
-
-    return $html;
-});
-
-Route::get('/anggota/{id}', function ($id) {
-    $anggota = Anggota::findOrFail($id);
-
-    $html = '<h1>Detail Anggota</h1>';
-    $html .= '<a href="/anggota">Kembali</a><br /><br />';
-    $html .= '<table border="1" cellpadding="10">';
-    $html .= '<tr><th>Field</th><th>Value</th></tr>';
-    $html .= '<tr><td>Kode Anggota</td><td>' . $anggota->kode_anggota . '</td></tr>';
-    $html .= '<tr><td>Nama</td><td>' . $anggota->nama . '</td></tr>';
-    $html .= '<tr><td>Email</td><td>' . $anggota->email . '</td></tr>';
-    $html .= '<tr><td>Telepon</td><td>' . $anggota->telepon . '</td></tr>';
-    $html .= '<tr><td>Alamat</td><td>' . $anggota->alamat . '</td></tr>';
-    $html .= '<tr><td>Tanggal Lahir</td><td>' . $anggota->tanggal_lahir->format('d-m-Y') . '</td></tr>';
-    $html .= '<tr><td>Umur</td><td>' . $anggota->umur . ' tahun</td></tr>';
-    $html .= '<tr><td>Jenis Kelamin</td><td>' . $anggota->jenis_kelamin . '</td></tr>';
-    $html .= '<tr><td>Pekerjaan</td><td>' . $anggota->pekerjaan . '</td></tr>';
-    $html .= '<tr><td>Tanggal Daftar</td><td>' . $anggota->tanggal_daftar->format('d-m-Y') . '</td></tr>';
-    $html .= '<tr><td>Lama Anggota</td><td>' . $anggota->lama_anggota . ' hari</td></tr>';
-    $html .= '<tr><td>Status</td><td>' . $anggota->status . '</td></tr>';
-    $html .= '</table>';
-
-    return $html;
-});
-
-// ========== TESTING SCOPE & QUERY ==========
+// ========== TESTING SCOPE & QUERY (PERTEMUAN 10) ==========
 
 Route::get('/test-query', function () {
     $html = '<h1>Testing Query Eloquent</h1>';
@@ -161,7 +64,7 @@ Route::get('/test-query', function () {
     return $html;
 });
 
-// ========== TESTING ACCESSOR & SCOPE (TUGAS 2) ==========
+// ========== TESTING ACCESSOR & SCOPE (PERTEMUAN 10 - TUGAS 2) ==========
 
 Route::get('/test-accessor-scope', function () {
     $html = '<!DOCTYPE html>
