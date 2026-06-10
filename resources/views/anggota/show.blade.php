@@ -124,11 +124,10 @@
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a>
                     <hr>
-                    <form action="{{ route('anggota.destroy', $anggota->id) }}" method="POST"
-                        onsubmit="return confirm('Yakin ingin menghapus?')">
+                    <form action="{{ route('anggota.destroy', $anggota->id) }}" method="POST" id="form-delete-anggota">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger w-100">
+                        <button type="button" class="btn btn-danger w-100" id="btn-delete-anggota">
                             <i class="bi bi-trash"></i> Hapus Anggota
                         </button>
                     </form>
@@ -137,3 +136,24 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('btn-delete-anggota').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Hapus Anggota?',
+                text: `Anggota "{{ $anggota->nama }}" akan dihapus permanen!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-anggota').submit();
+                }
+            });
+        });
+    </script>
+@endpush

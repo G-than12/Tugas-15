@@ -8,9 +8,14 @@
             <i class="bi bi-people"></i>
             Daftar Anggota
         </h1>
-        <a href="{{ route('anggota.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Tambah Anggota
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('anggota.export') }}" class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i> Export CSV
+            </a>
+            <a href="{{ route('anggota.create') }}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Tambah Anggota
+            </a>
+        </div>
     </div>
 
     {{-- Statistik --}}
@@ -53,6 +58,64 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Form Search & Filter --}}
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ route('anggota.search') }}" method="GET">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <input type="text" name="keyword" class="form-control" placeholder="Cari nama / email / telepon"
+                            value="{{ request('keyword') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="jenis_kelamin" class="form-select">
+                            <option value="">Semua Jenis Kelamin</option>
+                            <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
+                                Laki-laki
+                            </option>
+                            <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                Perempuan
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>
+                                Aktif
+                            </option>
+                            <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>
+                                Nonaktif
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="pekerjaan" class="form-select">
+                            <option value="">Semua Pekerjaan</option>
+                            <option value="Mahasiswa" {{ request('pekerjaan') == 'Mahasiswa' ? 'selected' : '' }}>
+                                Mahasiswa
+                            </option>
+                            <option value="Pegawai" {{ request('pekerjaan') == 'Pegawai' ? 'selected' : '' }}>
+                                Pegawai
+                            </option>
+                            <option value="Wiraswasta" {{ request('pekerjaan') == 'Wiraswasta' ? 'selected' : '' }}>
+                                Wiraswasta
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Cari
+                        </button>
+                        <a href="{{ route('anggota.index') }}" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -120,6 +183,18 @@
                                             title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
+
+
+                                        {{-- Tombol Delete --}}
+                                        <form action="{{ route('anggota.destroy', $anggota->id) }}" method="POST"
+                                            style="display: inline;" class="form-delete">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                data-nama="{{ $anggota->nama }}" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -137,3 +212,29 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const nama = this.dataset.nama;
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Hapus Anggota?',
+                    text: `Anggota "${nama}" akan dihapus permanen!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

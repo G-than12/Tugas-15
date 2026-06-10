@@ -7,6 +7,11 @@ use App\Http\Controllers\DashboardController;
 use App\Models\Buku;
 use App\Models\Anggota;
 
+Route::get('/anggota/export', [AnggotaController::class, 'export'])->name('anggota.export');
+Route::get('/anggota/search', [AnggotaController::class, 'search'])->name('anggota.search');
+Route::resource('anggota', AnggotaController::class);
+
+
 Route::get('/', function () {
     return view('home');
 })->name('home');

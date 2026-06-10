@@ -1,4 +1,4 @@
-# Pertemuan 12 - CRUD Buku Dengan Laravel
+# Pertemuan 13 - CRUD Anggota Dengan Laravel
 
 **Mata Kuliah:** Pemrograman Website 2  
 **Kode MK:** INF2419  
@@ -11,64 +11,70 @@
 
 ## Deskripsi
 
-Proyek ini merupakan implementasi Pertemuan 12 mata kuliah Pemrograman Website 2,
-yaitu implementasi lengkap operasi CRUD (Create, Read, Update, Delete) untuk data buku
-menggunakan Laravel. Fokus utama adalah Form Handling, Laravel Validation dengan Form Request,
-CSRF Protection, Flash Messages, Eloquent CRUD, serta fitur tambahan berupa
-Validation Rules Advanced, Bulk Delete, dan Export CSV.
+Proyek ini merupakan implementasi Pertemuan 13 mata kuliah Pemrograman Website 2,
+yaitu implementasi lengkap operasi CRUD (Create, Read, Update, Delete) untuk data anggota
+perpustakaan menggunakan Laravel. Fokus utama adalah penerapan DRY Principle,
+Advanced Form Validation untuk data personal (email, telepon, tanggal lahir),
+Handle Date Input dengan Date Picker, serta fitur tambahan berupa
+Auto-Generate Kode Anggota, Export CSV, dan Advanced Search & Filter.
 Studi kasus yang digunakan adalah Sistem Manajemen Perpustakaan.
 
 ---
 
-## Tugas 1 — Validation Rules Advanced (30%)
+## Tugas 1 — Auto-Generate Kode Anggota (30%)
 
-- [x] Custom Rule `KodeBukuFormat` dibuat dengan `php artisan make:rule KodeBukuFormat`
-- [x] Format kode buku divalidasi dengan regex: `BK-[2-4 huruf kapital]-[3 digit angka]`
-- [x] Contoh valid: `BK-PROG-001`, `BK-DB-002`, `BK-WD-010`
-- [x] Conditional validation: jika kategori `Programming`, field `bahasa` wajib `Inggris`
-- [x] Conditional validation: jika tahun terbit < 2000, stok maksimal 5
-- [x] Semua error message dalam Bahasa Indonesia
-- [x] `StoreBukuRequest` diperbarui dengan custom rule dan conditional validation
-- [x] `UpdateBukuRequest` diperbarui dengan ignore ID saat cek `unique` (mencegah false error saat update)
-
----
-
-## Tugas 2 — Bulk Delete Operations (35%)
-
-- [x] Route `POST /buku/bulk-delete` terdaftar dengan nama `buku.bulk-delete`
-- [x] Method `bulkDelete()` di `BukuController` menghapus banyak buku sekaligus
-- [x] Validasi: minimal 1 buku harus dipilih, setiap ID harus ada di database
-- [x] Checkbox per buku tampil sebagai pill `[☐ Pilih]` di pojok kiri atas setiap card
-- [x] Checkbox "Pilih Semua" sejajar dengan header grid
-- [x] Tombol "Hapus Terpilih" muncul otomatis saat ada buku yang dipilih
-- [x] Counter jumlah buku terpilih ditampilkan di tombol
-- [x] Konfirmasi SweetAlert2 sebelum eksekusi bulk delete
-- [x] Flash message menampilkan jumlah buku yang berhasil dihapus
+- [x] Helper function `generateKodeAnggota()` dibuat di `AnggotaController`
+- [x] Format kode otomatis: `AGT-[TAHUN]-[NOMOR_URUT]` (contoh: `AGT-2026-001`)
+- [x] Nomor urut dihitung berdasarkan anggota yang terdaftar di tahun yang sama
+- [x] Jika belum ada anggota di tahun berjalan, nomor urut dimulai dari `001`
+- [x] Kode anggota ditampilkan otomatis di form create (field `readonly`)
+- [x] User tidak perlu mengisi kode anggota secara manual
+- [x] Method `create()` diperbarui untuk meneruskan `$kodeAnggota` ke view
 
 ---
 
-## Tugas 3 — Export Buku ke CSV (35%)
+## Tugas 2 — Export Anggota ke CSV (40%)
 
-- [x] Route `GET /buku/export` terdaftar dengan nama `buku.export`
-- [x] Method `export()` di `BukuController` menghasilkan file CSV
-- [x] BOM UTF-8 ditambahkan agar karakter Indonesia terbaca benar di Excel
-- [x] Header kolom CSV: Kode Buku, Judul, Kategori, Pengarang, Penerbit, Tahun Terbit, ISBN, Bahasa, Harga, Stok, Deskripsi, Tanggal Input
-- [x] Nama file otomatis menggunakan timestamp: `data_buku_YYYY-MM-DD_HHmmss.csv`
-- [x] Tombol "Export CSV" tersedia di halaman daftar buku
+- [x] Route `GET /anggota/export` terdaftar dengan nama `anggota.export`
+- [x] Method `export()` di `AnggotaController` menghasilkan file CSV
+- [x] Header kolom CSV: Kode, Nama, Email, Telepon, Alamat, Tanggal Lahir, Jenis Kelamin, Pekerjaan, Status, Tanggal Daftar
+- [x] Nama file otomatis menggunakan timestamp: `anggota_YYYY-MM-DD_HHmmss.csv`
+- [x] Tombol "Export CSV" tersedia di halaman daftar anggota
 - [x] File langsung didownload tanpa disimpan di server (menggunakan `response()->stream()`)
+- [x] Implementasi menggunakan Pure PHP (`fputcsv`) tanpa library eksternal
+
+> **Catatan:** Package `maatwebsite/excel` dan `phpoffice/phpspreadsheet` tidak kompatibel
+> dengan PHP 8.5.3 yang digunakan. Solusi alternatif menggunakan `fputcsv` bawaan PHP
+> yang menghasilkan file CSV yang dapat dibuka langsung di Microsoft Excel.
+
+---
+
+## Tugas 3 — Advanced Search & Filter (30%)
+
+- [x] Route `GET /anggota/search` terdaftar dengan nama `anggota.search`
+- [x] Method `search()` di `AnggotaController` menangani pencarian dan filter
+- [x] Filter berdasarkan keyword (nama / email / telepon) menggunakan `LIKE`
+- [x] Filter berdasarkan jenis kelamin (Laki-laki / Perempuan)
+- [x] Filter berdasarkan status (Aktif / Nonaktif)
+- [x] Filter berdasarkan pekerjaan (Mahasiswa / Pegawai / Wiraswasta)
+- [x] Form search tampil di atas tabel dengan tombol Cari dan Reset
+- [x] Nilai filter tetap tampil di form setelah pencarian (menggunakan `request()`)
+- [x] Statistik (total, aktif, nonaktif) ikut berubah sesuai hasil filter
 
 ---
 
 ## File yang Dibuat / Diubah
 
-| File                                      | Keterangan                                                     |
-| ----------------------------------------- | -------------------------------------------------------------- |
-| `app/Rules/KodeBukuFormat.php`            | Custom validation rule format kode buku — Tugas 1              |
-| `app/Http/Requests/StoreBukuRequest.php`  | Form Request create buku + custom rule + conditional — Tugas 1 |
-| `app/Http/Requests/UpdateBukuRequest.php` | Form Request update buku + ignore ID unique — Tugas 1          |
-| `app/Http/Controllers/BukuController.php` | Tambah method `bulkDelete()` dan `export()` — Tugas 2 & 3      |
-| `resources/views/buku/index.blade.php`    | Tambah checkbox bulk delete + tombol export CSV — Tugas 2 & 3  |
-| `routes/web.php`                          | Tambah route `bulk-delete` dan `export`                        |
+| File | Keterangan |
+| ---- | ---------- |
+| `app/Http/Controllers/AnggotaController.php` | Tambah method `export()`, `search()`, dan `generateKodeAnggota()` — Semua Tugas |
+| `app/Http/Requests/StoreAnggotaRequest.php` | Form Request create anggota + validasi advanced — Praktikum |
+| `app/Http/Requests/UpdateAnggotaRequest.php` | Form Request update anggota + ignore ID unique — Praktikum |
+| `resources/views/anggota/index.blade.php` | Tambah tombol export CSV + form search & filter — Tugas 2 & 3 |
+| `resources/views/anggota/create.blade.php` | Form tambah anggota + kode otomatis + date picker — Tugas 1 |
+| `resources/views/anggota/edit.blade.php` | Form edit anggota + date picker — Praktikum |
+| `resources/views/anggota/show.blade.php` | Detail anggota — Praktikum |
+| `routes/web.php` | Tambah route `export` dan `search` untuk anggota |
 
 ---
 
@@ -80,38 +86,29 @@ perpustakaan-laravel/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   └── BukuController.php        ← CRUD + bulkDelete() + export()
+│   │   │   └── AnggotaController.php     ← CRUD + export() + search() + generateKodeAnggota()
 │   │   └── Requests/
-│   │       ├── StoreBukuRequest.php       ← Validasi tambah buku
-│   │       └── UpdateBukuRequest.php      ← Validasi edit buku (ignore ID)
+│   │       ├── StoreAnggotaRequest.php    ← Validasi tambah anggota
+│   │       └── UpdateAnggotaRequest.php   ← Validasi edit anggota (ignore ID)
 │   │
-│   ├── Models/
-│   │   └── Buku.php                       ← Eloquent Model
-│   │
-│   ├── Rules/
-│   │   └── KodeBukuFormat.php             ← Custom rule format kode buku
-│   │
-│   └── View/
-│       └── Components/
-│           └── BukuCard.php               ← Class Blade Component
+│   └── Models/
+│       └── Anggota.php                    ← Eloquent Model + Accessor + Scope
 │
 ├── database/
 │   ├── migrations/
-│   │   └── xxxx_create_buku_table.php     ← Struktur tabel buku
+│   │   └── xxxx_create_anggota_table.php  ← Struktur tabel anggota
 │   └── seeders/
-│       └── BukuSeeder.php                 ← Data dummy buku
+│       └── AnggotaSeeder.php              ← Data dummy anggota
 │
 ├── resources/
 │   └── views/
 │       ├── layouts/
 │       │   └── app.blade.php              ← Layout utama + flash messages
-│       ├── components/
-│       │   └── buku-card.blade.php        ← Template Blade Component card buku
-│       └── buku/
-│           ├── index.blade.php            ← Daftar buku + bulk delete + export
-│           ├── create.blade.php           ← Form tambah buku
-│           ├── edit.blade.php             ← Form edit buku
-│           └── show.blade.php             ← Detail buku
+│       └── anggota/
+│           ├── index.blade.php            ← Daftar anggota + export + search
+│           ├── create.blade.php           ← Form tambah anggota + kode otomatis
+│           ├── edit.blade.php             ← Form edit anggota
+│           └── show.blade.php             ← Detail anggota
 │
 └── routes/
     └── web.php                            ← Semua route aplikasi
@@ -124,8 +121,8 @@ perpustakaan-laravel/
 ### 1. Clone repo
 
 ```bash
-git clone https://github.com/G-than12/Tugas-12.git
-cd [Tugas-12]
+git clone https://github.com/G-than12/Tugas-13.git
+cd Tugas-13
 ```
 
 ### 2. Install dependencies
@@ -169,51 +166,63 @@ php artisan serve
 
 ## URL Testing
 
-| URL                 | Method | Keterangan                                  |
-| ------------------- | ------ | ------------------------------------------- |
-| `/dashboard`        | GET    | Halaman dashboard                           |
-| `/buku`             | GET    | Daftar buku + bulk delete + export CSV      |
-| `/buku/create`      | GET    | Form tambah buku                            |
-| `/buku`             | POST   | Simpan buku baru                            |
-| `/buku/{id}`        | GET    | Detail buku                                 |
-| `/buku/{id}/edit`   | GET    | Form edit buku                              |
-| `/buku/{id}`        | PUT    | Update data buku                            |
-| `/buku/{id}`        | DELETE | Hapus satu buku                             |
-| `/buku/bulk-delete` | POST   | Hapus banyak buku sekaligus — Tugas 2 ✅    |
-| `/buku/export`      | GET    | Download data buku sebagai CSV — Tugas 3 ✅ |
-| `/buku/search`      | GET    | Pencarian & filter buku                     |
+| URL | Method | Keterangan |
+| --- | ------ | ---------- |
+| `/dashboard` | GET | Halaman dashboard |
+| `/anggota` | GET | Daftar anggota + export CSV + search |
+| `/anggota/create` | GET | Form tambah anggota (kode otomatis) |
+| `/anggota` | POST | Simpan anggota baru |
+| `/anggota/{id}` | GET | Detail anggota |
+| `/anggota/{id}/edit` | GET | Form edit anggota |
+| `/anggota/{id}` | PUT | Update data anggota |
+| `/anggota/{id}` | DELETE | Hapus anggota |
+| `/anggota/export` | GET | Download data anggota sebagai CSV — Tugas 2 ✅ |
+| `/anggota/search` | GET | Pencarian & filter anggota — Tugas 3 ✅ |
 
 ---
 
-## Validasi Kode Buku (Tugas 1)
+## Format Kode Anggota (Tugas 1)
 
-Format yang diterima: `BK-[SINGKATAN]-[NOMOR]`
+Format yang dihasilkan otomatis: `AGT-[TAHUN]-[NOMOR_URUT]`
 
-| Contoh               | Status                               |
-| -------------------- | ------------------------------------ |
-| `BK-PROG-001`        | ✅ Valid                             |
-| `BK-DB-002`          | ✅ Valid                             |
-| `BK-WD-010`          | ✅ Valid                             |
-| `BK-NET-099`         | ✅ Valid                             |
-| `BK-001`             | ❌ Tidak valid                       |
-| `PROG-001`           | ❌ Tidak valid                       |
-| `BK-PROGRAMMING-001` | ❌ Tidak valid (singkatan > 4 huruf) |
+| Contoh | Keterangan |
+| ------ | ---------- |
+| `AGT-2026-001` | Anggota pertama tahun 2026 |
+| `AGT-2026-002` | Anggota kedua tahun 2026 |
+| `AGT-2026-010` | Anggota kesepuluh tahun 2026 |
+| `AGT-2027-001` | Reset ke 001 di tahun berikutnya |
+
+---
+
+## Validasi Data Anggota
+
+| Field | Aturan Validasi |
+| ----- | --------------- |
+| Kode Anggota | Required, unik, max 20 karakter |
+| Nama | Required, max 100 karakter |
+| Email | Required, format email valid, unik |
+| Telepon | Required, format Indonesia (`08xx` / `+62xx`), 10-15 karakter |
+| Alamat | Required |
+| Tanggal Lahir | Required, format tanggal valid, harus sebelum hari ini |
+| Jenis Kelamin | Required, hanya `Laki-laki` atau `Perempuan` |
+| Pekerjaan | Opsional, max 50 karakter |
+| Tanggal Daftar | Required, tidak boleh di masa depan |
+| Status | Required, hanya `Aktif` atau `Nonaktif` |
 
 ---
 
 ## Screenshot
 
-### Tugas 1 — Validation Rules Advanced
+### Tugas 1 — Auto-Generate Kode Anggota
 
-![Validation](screenshots/validation-kode-buku.jpeg)
+![Auto Generate](screenshots/auto-generate-kode.jpeg)
 
-### Tugas 2 — Bulk Delete
+### Tugas 2 — Export CSV
 
-![Bulk Delete](screenshots/bulk-delete-checkbox.png)
-![Bulk Delete](screenshots/bulk-delete-konfirmasi.png)
-![Bulk Delete](screenshots/bulk-delete-sukses.png)
+![Export CSV Tombol](screenshots/export-csv-tombol.jpeg)
+![Export CSV Hasil](screenshots/export-csv-hasil.png)
 
-### Tugas 3 — Export CSV
+### Tugas 3 — Advanced Search & Filter
 
-![Export CSV](screenshots/export-csv-tombol.png)
-![Export CSV](screenshots/export-csv-hasil.png)
+![Search Filter](screenshots/search-filter-form.jpeg)
+![Search Hasil](screenshots/search-filter-hasil.jpeg)
