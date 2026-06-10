@@ -211,6 +211,147 @@ Format yang dihasilkan otomatis: `AGT-[TAHUN]-[NOMOR_URUT]`
 
 ---
 
+## Penjelasan Tugas 2 — Export CSV
+
+Fitur export menggunakan fungsi bawaan PHP `fputcsv` tanpa memerlukan library eksternal.
+Pendekatan ini dipilih karena package `maatwebsite/excel` dan `phpoffice/phpspreadsheet`
+tidak kompatibel dengan PHP 8.5.3.
+
+### Cara Kerja
+
+1. User klik tombol **"Export CSV"** di halaman daftar anggota
+2. Request dikirim ke route `GET /anggota/export`
+3. Controller mengambil seluruh data anggota dari database
+4. Data ditulis ke `php://output` menggunakan `fputcsv` baris per baris
+5. BOM UTF-8 ditambahkan di awal file agar karakter Indonesia terbaca benar di Excel
+6. Nomor telepon diberi prefix `\t` agar Excel tidak mengubahnya menjadi notasi ilmiah
+7. Tanggal lahir dan tanggal daftar diformat ke `d-m-Y` (contoh: `15-05-1995`)
+8. File langsung terdownload ke komputer user tanpa disimpan di server
+
+### Isi Kolom CSV
+
+| Kolom | Contoh Data |
+| ----- | ----------- |
+| Kode | `AGT-2026-001` |
+| Nama | `Gathan Hilabi` |
+| Email | `gathan@example.com` |
+| Telepon | `081234567890` |
+| Alamat | `Jl. Contoh No. 1, Pekalongan` |
+| Tanggal Lahir | `15-05-2000` |
+| Jenis Kelamin | `Laki-laki` |
+| Pekerjaan | `Mahasiswa` |
+| Status | `Aktif` |
+| Tanggal Daftar | `10-06-2026` |
+
+### Potongan Kode Utama
+
+```php
+public function export()
+{
+    $anggotas = Anggota::all();
+    $filename = 'anggota_' . date('Y-m-d_His') . '.csv';
+
+    $headers = [
+        'Content-Type'        => 'text/csv; charset=UTF-8',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ];
+
+    $callback = function () use ($anggotas) {
+        $file = fopen('php://output', 'w');
+        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+
+        fputcsv($file, ['Kode', 'Nama', 'Email', 'Telepon', ...]);
+
+        foreach ($anggotas as $anggota) {
+            fputcsv($file, [
+                $anggota->kode_anggota,
+                $anggota->nama,
+                $anggota->email,
+                "\t" . $anggota->telepon,       // prefix \t agar tidak jadi notasi ilmiah
+                $anggota->alamat,
+                $anggota->tanggal_lahir?->format('d-m-Y'),
+                $anggota->jenis_kelamin,
+                $anggota->pekerjaan,
+                $anggota->status,
+                $anggota->tanggal_daftar?->format('d-m-Y'),
+            ]);
+        }
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+```
+
+---
+
+## Penjelasan Tugas 3 — Advanced Search & Filter
+
+Fitur search & filter memungkinkan admin mencari anggota berdasarkan beberapa kriteria
+sekaligus tanpa reload halaman yang tidak perlu. Semua filter dapat dikombinasikan.
+
+### Cara Kerja
+
+1. User mengisi form search di atas tabel (keyword, jenis kelamin, status, pekerjaan)
+2. Form dikirim via `GET` ke route `/anggota/search`
+3. Controller membangun query Eloquent secara dinamis berdasarkan parameter yang diisi
+4. Parameter yang kosong diabaikan (tidak mempengaruhi query)
+5. Hasil ditampilkan di halaman yang sama (`anggota.index`)
+6. Nilai filter tetap tampil di form setelah pencarian menggunakan `request('field')`
+7. Statistik (total, aktif, nonaktif) ikut berubah sesuai hasil filter
+8. Tombol **Reset** mengarahkan kembali ke `/anggota` untuk menampilkan semua data
+
+### Filter yang Tersedia
+
+| Filter | Tipe | Cara Kerja |
+| ------ | ---- | ---------- |
+| Keyword | Text input | Mencari di kolom `nama`, `email`, dan `telepon` menggunakan `LIKE %keyword%` |
+| Jenis Kelamin | Dropdown | Filter exact match: `Laki-laki` atau `Perempuan` |
+| Status | Dropdown | Filter exact match: `Aktif` atau `Nonaktif` |
+| Pekerjaan | Dropdown | Filter exact match: `Mahasiswa`, `Pegawai`, atau `Wiraswasta` |
+
+### Potongan Kode Utama
+
+```php
+public function search(Request $request)
+{
+    $query = Anggota::query();
+
+    // Filter keyword — cari di nama, email, telepon sekaligus
+    if ($request->keyword) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama', 'like', '%' . $request->keyword . '%')
+              ->orWhere('email', 'like', '%' . $request->keyword . '%')
+              ->orWhere('telepon', 'like', '%' . $request->keyword . '%');
+        });
+    }
+
+    // Filter dropdown — hanya dijalankan jika nilainya tidak kosong
+    if ($request->jenis_kelamin) {
+        $query->where('jenis_kelamin', $request->jenis_kelamin);
+    }
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+    if ($request->pekerjaan) {
+        $query->where('pekerjaan', $request->pekerjaan);
+    }
+
+    $anggotas = $query->latest()->get();
+
+    // Statistik ikut berubah sesuai hasil filter
+    $totalAnggota    = $anggotas->count();
+    $anggotaAktif    = $anggotas->where('status', 'Aktif')->count();
+    $anggotaNonaktif = $anggotas->where('status', 'Nonaktif')->count();
+
+    return view('anggota.index', compact(
+        'anggotas', 'totalAnggota', 'anggotaAktif', 'anggotaNonaktif'
+    ));
+}
+```
+
+---
+
 ## Screenshot
 
 ### Tugas 1 — Auto-Generate Kode Anggota
