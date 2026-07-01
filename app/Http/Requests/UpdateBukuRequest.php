@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Buku;
 use App\Rules\KodeBukuFormat;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,15 +13,40 @@ class UpdateBukuRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Jalan otomatis sebelum rules() divalidasi.
+     *
+     * kode_buku dan kategori TIDAK BOLEH diubah lewat form edit, karena
+     * kode_buku itu di-generate berdasarkan kategori saat buku dibuat
+     * (lihat StoreBukuRequest::generateKodeBuku()). Kalau kategori atau
+     * kode_buku diubah lewat edit tanpa kontrol, hubungan prefix kode
+     * dengan kategori jadi tidak konsisten lagi (mis. kategori "Database"
+     * tapi kode_buku masih "BK-PROG-007").
+     *
+     * Maka di sini kita selalu timpa kembali kedua field tsb dengan nilai
+     * asli dari database, apapun yang dikirim dari form/request — sama
+     * seperti prinsip "field readonly di UI, dipaksa ulang di server"
+     * yang dipakai di StoreBukuRequest.
+     */
+    protected function prepareForValidation(): void
+    {
+        $buku = Buku::find($this->route('buku'));
+
+        if ($buku) {
+            $this->merge([
+                'kategori'  => $buku->kategori,
+                'kode_buku' => $buku->kode_buku,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         // Ambil ID buku dari URL (misal: /buku/5/edit → ambil angka 5)
         $bukuId = $this->route('buku');
 
         return [
-            // ↓  tambah , . $bukuId di ujung unique
             'kode_buku'    => ['required', 'string', 'max:20', 'unique:buku,kode_buku,' . $bukuId, new KodeBukuFormat],
-
             'judul'        => 'required|string|max:200',
             'kategori'     => 'required|in:Programming,Database,Web Design,Networking,Data Science',
             'pengarang'    => 'required|string|max:100',
@@ -81,9 +107,10 @@ class UpdateBukuRequest extends FormRequest
 
     private function getStokMaxRule(): string
     {
-        if ($this->tahun_terbit && (int)$this->tahun_terbit < 2000) {
+        if ($this->tahun_terbit && (int) $this->tahun_terbit < 2000) {
             return 'max:5';
         }
+
         return 'max:99999';
     }
 
@@ -92,6 +119,7 @@ class UpdateBukuRequest extends FormRequest
         if ($this->kategori === 'Programming') {
             return 'in:Inggris';
         }
+
         return 'in:Indonesia,Inggris';
     }
 }

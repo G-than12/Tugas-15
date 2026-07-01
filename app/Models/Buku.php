@@ -125,4 +125,10 @@ class Buku extends Model
     {
         return $query->where('tahun_terbit', '>=', 2024);
     }
+
+    // Tambahkan method ini di class Buku
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }

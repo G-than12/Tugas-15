@@ -8,8 +8,45 @@ use Illuminate\Http\Request;
 use App\Models\Buku;
 use Illuminate\Validation\ValidationException;
 
+
 class BukuController extends Controller
 {
+
+    /**
+     * Endpoint AJAX: kembalikan preview kode buku berikutnya untuk kategori tertentu.
+     * Dipanggil dari form create saat kategori berubah.
+     */
+    public function previewKodeBuku(Request $request)
+    {
+        $request->validate([
+            'kategori' => 'required|in:Programming,Database,Web Design,Networking,Data Science',
+        ]);
+
+        $prefixKategori = [
+            'Programming'  => 'PROG',
+            'Database'     => 'DB',
+            'Web Design'   => 'WEB',
+            'Networking'   => 'NET',
+            'Data Science' => 'DS',
+        ];
+
+        $prefix = $prefixKategori[$request->kategori];
+
+        $nomorTerakhir = Buku::where('kategori', $request->kategori)
+            ->where('kode_buku', 'like', "BK-{$prefix}-%")
+            ->pluck('kode_buku')
+            ->map(function ($kode) {
+                return (int) substr($kode, strrpos($kode, '-') + 1);
+            })
+            ->max();
+
+        $nomorBaru = ($nomorTerakhir ?? 0) + 1;
+
+        return response()->json([
+            'kode_buku' => sprintf('BK-%s-%03d', $prefix, $nomorBaru),
+        ]);
+    }
+
     public function search(Request $request)
     {
         $query = Buku::query();
@@ -237,6 +274,8 @@ class BukuController extends Controller
                 ->with('error', 'Gagal menghapus buku: ' . $e->getMessage());
         }
     }
+
+
 
     /**
      * Export seluruh data buku ke file CSV

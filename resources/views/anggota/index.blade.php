@@ -1,240 +1,182 @@
-@extends('layouts.app')
-
-@section('title', 'Daftar Anggota')
-
-@section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
-            <i class="bi bi-people"></i>
-            Daftar Anggota
-        </h1>
-        <div class="d-flex gap-2">
-            <a href="{{ route('anggota.export') }}" class="btn btn-outline-success">
-                <i class="bi bi-file-earmark-excel"></i> Export CSV
-            </a>
-            <a href="{{ route('anggota.create') }}" class="btn btn-success">
-                <i class="bi bi-plus-circle"></i> Tambah Anggota
-            </a>
-        </div>
-    </div>
-
-    {{-- Statistik --}}
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card border-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="text-muted">Total Anggota</h6>
-                            <h2>{{ $totalAnggota }}</h2>
-                        </div>
-                        <i class="bi bi-people-fill text-success" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Daftar Anggota
+            </h2>
+            <div class="flex gap-2">
+                <a href="{{ route('anggota.export') }}" class="bg-green-600 text-white px-4 py-2 rounded text-sm">
+                    Export CSV
+                </a>
+                <a href="{{ route('anggota.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+                    + Tambah Anggota
+                </a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card border-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="text-muted">Anggota Aktif</h6>
-                            <h2>{{ $anggotaAktif }}</h2>
-                        </div>
-                        <i class="bi bi-person-check-fill text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-secondary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="text-muted">Anggota Nonaktif</h6>
-                            <h2>{{ $anggotaNonaktif }}</h2>
-                        </div>
-                        <i class="bi bi-person-x-fill text-secondary" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </x-slot>
 
-    {{-- Form Search & Filter --}}
-    <div class="card mb-4">
-        <div class="card-body">
-            <form action="{{ route('anggota.search') }}" method="GET">
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <input type="text" name="keyword" class="form-control" placeholder="Cari nama / email / telepon"
-                            value="{{ request('keyword') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <select name="jenis_kelamin" class="form-select">
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            {{-- Flash Messages --}}
+            @if (session('success'))
+                <div id="alert-success"
+                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 transition-opacity duration-700">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div id="alert-error"
+                    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 transition-opacity duration-700">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- Statistik --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                    <p class="text-sm text-gray-500">Total Anggota</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $totalAnggota }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                    <p class="text-sm text-gray-500">Anggota Aktif</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $anggotaAktif }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-gray-400">
+                    <p class="text-sm text-gray-500">Anggota Nonaktif</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ $anggotaNonaktif }}</p>
+                </div>
+            </div>
+
+            {{-- Search & Filter --}}
+            <div class="bg-white rounded-lg shadow p-4 mb-6">
+                <form action="{{ route('anggota.search') }}" method="GET">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <input type="text" name="keyword" placeholder="Cari nama / email / telepon"
+                            value="{{ request('keyword') }}" class="border rounded px-3 py-2 text-sm col-span-2">
+                        <select name="jenis_kelamin" class="border rounded px-3 py-2 text-sm">
                             <option value="">Semua Jenis Kelamin</option>
                             <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                Laki-laki
-                            </option>
+                                Laki-laki</option>
                             <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                Perempuan
-                            </option>
+                                Perempuan</option>
                         </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select name="status" class="form-select">
+                        <select name="status" class="border rounded px-3 py-2 text-sm">
                             <option value="">Semua Status</option>
-                            <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>
-                                Aktif
-                            </option>
-                            <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>
-                                Nonaktif
+                            <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif
                             </option>
                         </select>
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                class="bg-blue-600 text-white px-4 py-2 rounded text-sm w-full">Cari</button>
+                            <a href="{{ route('anggota.index') }}"
+                                class="border border-gray-400 text-gray-600 px-4 py-2 rounded text-sm w-full text-center">Reset</a>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <select name="pekerjaan" class="form-select">
-                            <option value="">Semua Pekerjaan</option>
-                            <option value="Mahasiswa" {{ request('pekerjaan') == 'Mahasiswa' ? 'selected' : '' }}>
-                                Mahasiswa
-                            </option>
-                            <option value="Pegawai" {{ request('pekerjaan') == 'Pegawai' ? 'selected' : '' }}>
-                                Pegawai
-                            </option>
-                            <option value="Wiraswasta" {{ request('pekerjaan') == 'Wiraswasta' ? 'selected' : '' }}>
-                                Wiraswasta
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-search"></i> Cari
-                        </button>
-                        <a href="{{ route('anggota.index') }}" class="btn btn-secondary w-100">
-                            <i class="bi bi-x-circle"></i> Reset
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Tabel Anggota --}}
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Telepon</th>
-                            <th>Jenis Kelamin</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($anggotas as $anggota)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    <code>{{ $anggota->kode_anggota }}</code>
-                                </td>
-                                <td>
-                                    <strong>{{ $anggota->nama }}</strong>
-                                </td>
-                                <td>
-                                    <i class="bi bi-envelope"></i>
-                                    {{ $anggota->email }}
-                                </td>
-                                <td>
-                                    <i class="bi bi-telephone"></i>
-                                    {{ $anggota->telepon }}
-                                </td>
-                                <td>
-                                    @if ($anggota->jenis_kelamin == 'Laki-laki')
-                                        <i class="bi bi-gender-male text-primary"></i>
-                                    @else
-                                        <i class="bi bi-gender-female text-danger"></i>
-                                    @endif
-                                    {{ $anggota->jenis_kelamin }}
-                                </td>
-                                <td>
-                                    @if ($anggota->status == 'Aktif')
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> Aktif
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary">
-                                            <i class="bi bi-x-circle"></i> Nonaktif
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('anggota.show', $anggota->id) }}"
-                                            class="btn btn-sm btn-info text-white" title="Detail">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="{{ route('anggota.edit', $anggota->id) }}" class="btn btn-sm btn-warning"
-                                            title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-
-
-                                        {{-- Tombol Delete --}}
-                                        <form action="{{ route('anggota.destroy', $anggota->id) }}" method="POST"
-                                            style="display: inline;" class="form-delete">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                data-nama="{{ $anggota->nama }}" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center text-muted">
-                                    <i class="bi bi-inbox"></i>
-                                    Tidak ada data anggota
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                </form>
             </div>
+
+            {{-- Tabel --}}
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telepon</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis
+                                    Kelamin</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse ($anggotas as $anggota)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                    <td class="px-4 py-3"><code
+                                            class="bg-gray-100 px-1 rounded">{{ $anggota->kode_anggota }}</code></td>
+                                    <td class="px-4 py-3 font-semibold">{{ $anggota->nama }}</td>
+                                    <td class="px-4 py-3 text-gray-600">{{ $anggota->email }}</td>
+                                    <td class="px-4 py-3 text-gray-600">{{ $anggota->telepon }}</td>
+                                    <td class="px-4 py-3">{{ $anggota->jenis_kelamin }}</td>
+                                    <td class="px-4 py-3">
+                                        @if ($anggota->status == 'Aktif')
+                                            <span
+                                                class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Aktif</span>
+                                        @else
+                                            <span
+                                                class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">Nonaktif</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex gap-1">
+                                            <a href="{{ route('anggota.show', $anggota->id) }}"
+                                                class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Detail</a>
+                                            <a href="{{ route('anggota.edit', $anggota->id) }}"
+                                                class="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Edit</a>
+                                            <form action="{{ route('anggota.destroy', $anggota->id) }}" method="POST"
+                                                class="form-delete inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="bg-red-600 text-white px-2 py-1 rounded text-xs btn-delete"
+                                                    data-nama="{{ $anggota->nama }}">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-4 py-8 text-center text-gray-400">Tidak ada data
+                                        anggota</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
-@endsection
 
-@push('scripts')
-    <script>
-        document.querySelectorAll('.btn-delete').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const nama = this.dataset.nama;
-                const form = this.closest('form');
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function autoHideAlert(id, delay = 5000) {
+                const el = document.getElementById(id);
+                if (el) {
+                    setTimeout(() => {
+                        el.style.opacity = '0';
+                        setTimeout(() => el.remove(), 700);
+                    }, delay);
+                }
+            }
+            autoHideAlert('alert-success');
+            autoHideAlert('alert-error');
 
-                Swal.fire({
-                    title: 'Hapus Anggota?',
-                    text: `Anggota "${nama}" akan dihapus permanen!`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
+            document.querySelectorAll('.btn-delete').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const nama = this.dataset.nama;
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Hapus Anggota?',
+                        text: `Anggota "${nama}" akan dihapus permanen!`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
                 });
             });
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
+</x-app-layout>

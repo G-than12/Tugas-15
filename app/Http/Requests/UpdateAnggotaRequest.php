@@ -3,31 +3,37 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAnggotaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        // Get anggota ID from route parameter
-        $anggotaId = $this->route('anggota');
+        // PENTING: nama parameter route untuk resource 'anggota' adalah 'anggotum',
+        // bukan 'anggota'. Ini karena Laravel auto-singularize kata "anggota"
+        // (diakhiri huruf 'a') dianggap kata Latin seperti "data" -> "datum".
+        // Bisa dicek lewat: php artisan route:list --name=anggota
+        $anggota = $this->route('anggotum');
 
         return [
-            'kode_anggota' => 'required|string|max:20|unique:anggota,kode_anggota,' . $anggotaId,
+            'kode_anggota' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('anggota', 'kode_anggota')->ignore($anggota),
+            ],
             'nama' => 'required|string|max:100',
-            'email' => 'required|email|unique:anggota,email,' . $anggotaId . '|max:100',
+            'email' => [
+                'required',
+                'email',
+                'max:100',
+                Rule::unique('anggota', 'email')->ignore($anggota),
+            ],
             'telepon' => [
                 'required',
                 'regex:/^(\+62|62|0)[0-9]{9,12}$/',
@@ -52,9 +58,6 @@ class UpdateAnggotaRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom error messages.
-     */
     public function messages(): array
     {
         return [

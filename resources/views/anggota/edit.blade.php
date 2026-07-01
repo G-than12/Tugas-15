@@ -1,226 +1,187 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Edit Anggota: {{ $anggota->nama }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Edit Anggota')
+    <div class="py-6">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow p-6">
 
-@push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-@endpush
+                <form action="{{ route('anggota.update', $anggota->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-@section('content')
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card">
-                <div class="card-header bg-warning">
-                    <h4 class="mb-0">
-                        <i class="bi bi-pencil-square"></i>
-                        Edit Anggota: {{ $anggota->nama }}
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('anggota.update', $anggota->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="row">
-                            {{-- Kode Anggota --}}
-                            <div class="col-md-4 mb-3">
-                                <label for="kode_anggota" class="form-label">
-                                    Kode Anggota <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="kode_anggota" id="kode_anggota"
-                                    class="form-control @error('kode_anggota') is-invalid @enderror"
-                                    value="{{ old('kode_anggota', $anggota->kode_anggota) }}">
-                                @error('kode_anggota')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Nama --}}
-                            <div class="col-md-8 mb-3">
-                                <label for="nama" class="form-label">
-                                    Nama Lengkap <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="nama" id="nama"
-                                    class="form-control @error('nama') is-invalid @enderror"
-                                    value="{{ old('nama', $anggota->nama) }}">
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            {{-- Email --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">
-                                    Email <span class="text-danger">*</span>
-                                </label>
-                                <input type="email" name="email" id="email"
-                                    class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email', $anggota->email) }}">
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Telepon --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="telepon" class="form-label">
-                                    Nomor Telepon <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="telepon" id="telepon"
-                                    class="form-control @error('telepon') is-invalid @enderror"
-                                    value="{{ old('telepon', $anggota->telepon) }}">
-                                @error('telepon')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- Alamat --}}
-                        <div class="mb-3">
-                            <label for="alamat" class="form-label">
-                                Alamat Lengkap <span class="text-danger">*</span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        {{-- Kode Anggota --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kode Anggota <span class="text-red-500">*</span>
                             </label>
-                            <textarea name="alamat" id="alamat" rows="3" class="form-control @error('alamat') is-invalid @enderror">{{ old('alamat', $anggota->alamat) }}</textarea>
-                            @error('alamat')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <input type="text" name="kode_anggota"
+                                class="w-full border rounded px-3 py-2 text-sm @error('kode_anggota') border-red-500 @enderror"
+                                value="{{ old('kode_anggota', $anggota->kode_anggota) }}">
+                            @error('kode_anggota')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="row">
-                            {{-- Tanggal Lahir --}}
-                            <div class="col-md-4 mb-3">
-                                <label for="tanggal_lahir" class="form-label">
-                                    Tanggal Lahir <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" name="tanggal_lahir" id="tanggal_lahir"
-                                    class="form-control @error('tanggal_lahir') is-invalid @enderror"
-                                    value="{{ old('tanggal_lahir', $anggota->tanggal_lahir?->format('Y-m-d')) }}"
-                                    max="{{ date('Y-m-d') }}">
-                                @error('tanggal_lahir')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        {{-- Nama --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nama Lengkap <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="nama"
+                                class="w-full border rounded px-3 py-2 text-sm @error('nama') border-red-500 @enderror"
+                                value="{{ old('nama', $anggota->nama) }}">
+                            @error('nama')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
 
-                            {{-- Jenis Kelamin --}}
-                            <div class="col-md-4 mb-3">
-                                <label for="jenis_kelamin" class="form-label">
-                                    Jenis Kelamin <span class="text-danger">*</span>
-                                </label>
-                                <select name="jenis_kelamin" id="jenis_kelamin"
-                                    class="form-select @error('jenis_kelamin') is-invalid @enderror">
-                                    <option value="">-- Pilih Jenis Kelamin --</option>
-                                    @foreach (['Laki-laki', 'Perempuan'] as $jk)
-                                        <option value="{{ $jk }}"
-                                            {{ old('jenis_kelamin', $anggota->jenis_kelamin) == $jk ? 'selected' : '' }}>
-                                            {{ $jk }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('jenis_kelamin')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Pekerjaan --}}
-                            <div class="col-md-4 mb-3">
-                                <label for="pekerjaan" class="form-label">Pekerjaan</label>
-                                <input type="text" name="pekerjaan" id="pekerjaan"
-                                    class="form-control @error('pekerjaan') is-invalid @enderror"
-                                    value="{{ old('pekerjaan', $anggota->pekerjaan) }}">
-                                @error('pekerjaan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        {{-- Email --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" name="email"
+                                class="w-full border rounded px-3 py-2 text-sm @error('email') border-red-500 @enderror"
+                                value="{{ old('email', $anggota->email) }}">
+                            @error('email')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <div class="row">
-                            {{-- Tanggal Daftar --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="tanggal_daftar" class="form-label">
-                                    Tanggal Pendaftaran <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" name="tanggal_daftar" id="tanggal_daftar"
-                                    class="form-control @error('tanggal_daftar') is-invalid @enderror"
-                                    value="{{ old('tanggal_daftar', $anggota->tanggal_daftar?->format('Y-m-d')) }}"
-                                    max="{{ date('Y-m-d') }}">
-                                @error('tanggal_daftar')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        {{-- Telepon --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nomor Telepon <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="telepon" id="telepon"
+                                class="w-full border rounded px-3 py-2 text-sm @error('telepon') border-red-500 @enderror"
+                                value="{{ old('telepon', $anggota->telepon) }}">
+                            @error('telepon')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
 
-                            {{-- Status --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">
-                                    Status <span class="text-danger">*</span>
-                                </label>
-                                <select name="status" id="status"
-                                    class="form-select @error('status') is-invalid @enderror">
-                                    @foreach (['Aktif', 'Nonaktif'] as $st)
-                                        <option value="{{ $st }}"
-                                            {{ old('status', $anggota->status) == $st ? 'selected' : '' }}>
-                                            {{ $st }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    {{-- Alamat --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Alamat Lengkap <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="alamat" rows="3"
+                            class="w-full border rounded px-3 py-2 text-sm @error('alamat') border-red-500 @enderror">{{ old('alamat', $anggota->alamat) }}</textarea>
+                        @error('alamat')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        {{-- Tanggal Lahir --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Tanggal Lahir <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="tanggal_lahir"
+                                class="w-full border rounded px-3 py-2 text-sm @error('tanggal_lahir') border-red-500 @enderror"
+                                value="{{ old('tanggal_lahir', $anggota->tanggal_lahir?->format('Y-m-d')) }}"
+                                max="{{ date('Y-m-d') }}">
+                            @error('tanggal_lahir')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <hr>
-
-                        {{-- Buttons --}}
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('anggota.show', $anggota->id) }}" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Kembali
-                            </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="bi bi-save"></i> Update Anggota
-                            </button>
+                        {{-- Jenis Kelamin --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Jenis Kelamin <span class="text-red-500">*</span>
+                            </label>
+                            <select name="jenis_kelamin"
+                                class="w-full border rounded px-3 py-2 text-sm @error('jenis_kelamin') border-red-500 @enderror">
+                                <option value="">-- Pilih --</option>
+                                @foreach (['Laki-laki', 'Perempuan'] as $jk)
+                                    <option value="{{ $jk }}"
+                                        {{ old('jenis_kelamin', $anggota->jenis_kelamin) == $jk ? 'selected' : '' }}>
+                                        {{ $jk }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('jenis_kelamin')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
-                    </form>
-                </div>
+
+                        {{-- Pekerjaan --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label>
+                            <input type="text" name="pekerjaan"
+                                class="w-full border rounded px-3 py-2 text-sm @error('pekerjaan') border-red-500 @enderror"
+                                value="{{ old('pekerjaan', $anggota->pekerjaan) }}">
+                            @error('pekerjaan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {{-- Tanggal Daftar --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Tanggal Pendaftaran <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="tanggal_daftar"
+                                class="w-full border rounded px-3 py-2 text-sm @error('tanggal_daftar') border-red-500 @enderror"
+                                value="{{ old('tanggal_daftar', $anggota->tanggal_daftar?->format('Y-m-d')) }}"
+                                max="{{ date('Y-m-d') }}">
+                            @error('tanggal_daftar')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Status --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Status <span class="text-red-500">*</span>
+                            </label>
+                            <select name="status"
+                                class="w-full border rounded px-3 py-2 text-sm @error('status') border-red-500 @enderror">
+                                @foreach (['Aktif', 'Nonaktif'] as $st)
+                                    <option value="{{ $st }}"
+                                        {{ old('status', $anggota->status) == $st ? 'selected' : '' }}>
+                                        {{ $st }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('status')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between border-t pt-4">
+                        <a href="{{ route('anggota.show', $anggota->id) }}"
+                            class="border border-gray-400 text-gray-600 px-4 py-2 rounded text-sm">
+                            ← Kembali
+                        </a>
+                        <button type="submit" class="bg-yellow-400 text-white px-6 py-2 rounded text-sm">
+                            Update Anggota
+                        </button>
+                    </div>
+                </form>
+
             </div>
 
             {{-- Info Update --}}
-            <div class="card mt-3">
-                <div class="card-body">
-                    <small class="text-muted">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>Informasi:</strong><br />
-                        - Anggota terdaftar: {{ $anggota->created_at->format('d M Y H:i') }}<br />
-                        - Terakhir diupdate: {{ $anggota->updated_at->format('d M Y H:i') }}<br />
-                        - Lama menjadi anggota: {{ $anggota->lama_anggota }} hari
-                        ({{ round($anggota->lama_anggota / 365, 1) }} tahun)
-                    </small>
-                </div>
+            <div class="bg-white rounded-lg shadow p-4 mt-4 text-sm text-gray-500">
+                Terdaftar: {{ $anggota->created_at->format('d M Y H:i') }} ·
+                Terakhir update: {{ $anggota->updated_at->format('d M Y H:i') }} ·
+                Lama anggota: {{ $anggota->lama_anggota }} hari ({{ round($anggota->lama_anggota / 365, 1) }} tahun)
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
-    <script>
-        // Initialize Flatpickr
-        flatpickr("#tanggal_lahir", {
-            dateFormat: "Y-m-d",
-            maxDate: "today",
-            locale: "id",
-            altInput: true,
-            altFormat: "d F Y",
-        });
-
-        flatpickr("#tanggal_daftar", {
-            dateFormat: "Y-m-d",
-            maxDate: "today",
-            locale: "id",
-            altInput: true,
-            altFormat: "d F Y",
-        });
-    </script>
-@endpush
+</x-app-layout>
