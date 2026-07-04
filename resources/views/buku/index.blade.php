@@ -1,17 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
                 Daftar Buku
             </h2>
             <div class="flex gap-2">
-                <button id="btn-bulk-delete" class="hidden bg-red-600 text-white px-4 py-2 rounded text-sm"
+                <button id="btn-bulk-delete"
+                    class="hidden bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm"
                     onclick="konfirmasiBulkDelete()">
                     Hapus Terpilih (<span id="jumlah-terpilih">0</span>)
                 </button>
-                <a href="{{ route('buku.export') }}" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Export
+                <a href="{{ route('buku.export') }}"
+                    class="bg-green-600 hover:bg-green-700 transition text-white px-4 py-2 rounded text-sm">Export
                     CSV</a>
-                <a href="{{ route('buku.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">+ Tambah
+                <a href="{{ route('buku.create') }}"
+                    class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded text-sm">+ Tambah
                     Buku</a>
             </div>
         </div>
@@ -23,13 +26,13 @@
             {{-- Flash Messages --}}
             @if (session('success'))
                 <div id="alert-success"
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 transition-opacity duration-700">
+                    class="bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4 transition-opacity duration-700">
                     {{ session('success') }}
                 </div>
             @endif
             @if (session('error'))
                 <div id="alert-error"
-                    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 transition-opacity duration-700">
+                    class="bg-red-100 dark:bg-red-900/40 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4 transition-opacity duration-700">
                     {{ session('error') }}
                 </div>
             @endif
@@ -52,76 +55,96 @@
 
             {{-- Statistik --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-                    <p class="text-sm text-gray-500">Total Buku</p>
-                    <p class="text-3xl font-bold text-gray-800">{{ $totalBuku }}</p>
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-blue-500 transition-colors duration-300">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Total Buku</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $totalBuku }}</p>
                 </div>
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-                    <p class="text-sm text-gray-500">Buku Tersedia</p>
-                    <p class="text-3xl font-bold text-gray-800">{{ $bukuTersedia }}</p>
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-green-500 transition-colors duration-300">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Buku Tersedia</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $bukuTersedia }}</p>
                 </div>
-                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
-                    <p class="text-sm text-gray-500">Buku Habis</p>
-                    <p class="text-3xl font-bold text-gray-800">{{ $bukuHabis }}</p>
-                </div>
-            </div>
-
-            {{-- Filter Kategori --}}
-            <div class="bg-white rounded-lg shadow p-4 mb-4">
-                <p class="text-sm font-semibold text-gray-600 mb-2">Filter Kategori:</p>
-                <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('buku.index') }}"
-                        class="px-3 py-1 rounded text-sm {{ !isset($kategori) ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600' }}">
-                        Semua
-                    </a>
-                    @foreach (['Programming', 'Database', 'Web Design', 'Networking', 'Data Science'] as $kat)
-                        <a href="{{ route('buku.kategori', $kat) }}"
-                            class="px-3 py-1 rounded text-sm {{ isset($kategori) && $kategori == $kat ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600' }}">
-                            {{ $kat }}
-                        </a>
-                    @endforeach
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-red-500 transition-colors duration-300">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Buku Habis</p>
+                    <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $bukuHabis }}</p>
                 </div>
             </div>
 
-            {{-- Search & Filter --}}
-            <div class="bg-white rounded-lg shadow p-4 mb-6">
-                <p class="text-sm font-semibold text-gray-600 mb-3">Pencarian & Filter</p>
+            {{-- Pencarian & Filter Kompleks --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 transition-colors duration-300">
                 <form action="{{ route('buku.search') }}" method="GET">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                        <input type="text" name="keyword" placeholder="Cari judul, pengarang..."
-                            value="{{ request('keyword') }}" class="border rounded px-3 py-2 text-sm col-span-2">
-                        <select name="kategori" class="border rounded px-3 py-2 text-sm">
-                            <option value="">Semua Kategori</option>
-                            @isset($kategoriList)
-                                @foreach ($kategoriList as $kat)
-                                    <option value="{{ $kat }}"
-                                        {{ request('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                                @endforeach
-                            @endisset
-                        </select>
-                        <select name="ketersediaan" class="border rounded px-3 py-2 text-sm">
-                            <option value="">Semua</option>
-                            <option value="tersedia" {{ request('ketersediaan') == 'tersedia' ? 'selected' : '' }}>
-                                Tersedia</option>
-                            <option value="habis" {{ request('ketersediaan') == 'habis' ? 'selected' : '' }}>Habis
-                            </option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+                        {{-- Baris 1 --}}
+                        <div class="lg:col-span-2">
+                            <input type="text" name="keyword" placeholder="Cari judul, pengarang..."
+                                value="{{ request('keyword') }}"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                        </div>
+
+                        <div>
+                            <select name="kategori"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                                <option value="">Semua Kategori</option>
+                                @isset($kategoriList)
+                                    @foreach ($kategoriList as $kat)
+                                        <option value="{{ $kat }}"
+                                            {{ request('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}
+                                        </option>
+                                    @endforeach
+                                @endisset
+                            </select>
+                        </div>
+
+                        <div>
+                            <select name="ketersediaan"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                                <option value="">Semua Ketersediaan</option>
+                                <option value="tersedia" {{ request('ketersediaan') == 'tersedia' ? 'selected' : '' }}>
+                                    Tersedia</option>
+                                <option value="habis" {{ request('ketersediaan') == 'habis' ? 'selected' : '' }}>
+                                    Habis</option>
+                            </select>
+                        </div>
+
+                        {{-- Baris 2 --}}
+                        <div>
+                            <input type="number" name="tahun_terbit" placeholder="Tahun Terbit (Contoh: 2023)"
+                                value="{{ request('tahun_terbit') }}"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                        </div>
+
+                        <div>
+                            <input type="number" name="harga_min" placeholder="Harga Minimum (Rp)" min="0"
+                                value="{{ request('harga_min') }}"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                        </div>
+
+                        <div>
+                            <input type="number" name="harga_max" placeholder="Harga Maksimum (Rp)" min="0"
+                                value="{{ request('harga_max') }}"
+                                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded px-3 py-2 text-sm w-full transition-colors duration-300">
+                        </div>
+
                         <div class="flex gap-2">
                             <button type="submit"
-                                class="bg-blue-600 text-white px-4 py-2 rounded text-sm w-full">Cari</button>
+                                class="bg-blue-600 text-white px-4 py-2 rounded text-sm w-full hover:bg-blue-700 transition">Cari</button>
                             <a href="{{ route('buku.index') }}"
-                                class="border border-gray-400 text-gray-600 px-4 py-2 rounded text-sm w-full text-center">Reset</a>
+                                class="border border-gray-400 dark:border-gray-600 text-gray-600 dark:text-gray-300 px-4 py-2 rounded text-sm w-full text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center">Reset</a>
                         </div>
+
                     </div>
                 </form>
             </div>
 
             {{-- Pilih Semua --}}
             <div class="flex justify-between items-center mb-3">
-                <p class="text-sm text-gray-500">Tampilan Grid Buku</p>
-                <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-500">
-                    <input type="checkbox" id="select-all" class="w-4 h-4">
-                    Pilih Semua
+                <p class="text-sm text-gray-500 dark:text-gray-400">Tampilan Grid Buku</p>
+                <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-500 dark:text-gray-400">
+                    <input type="checkbox" id="select-all" class="w-4 h-4 dark:bg-gray-700 dark:border-gray-600">
+                    Pilih Semua (Halaman Ini)
                 </label>
             </div>
 
@@ -136,27 +159,27 @@
                 @forelse($bukus as $buku)
                     <div class="relative">
                         <label for="buku-{{ $buku->id }}"
-                            class="absolute top-2 left-2 z-10 flex items-center gap-1 bg-white border rounded-full px-2 py-1 text-xs text-gray-500 cursor-pointer shadow">
-                            <input class="checkbox-buku w-3 h-3" type="checkbox" data-id="{{ $buku->id }}"
-                                id="buku-{{ $buku->id }}">
+                            class="absolute top-2 left-2 z-10 flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full px-2 py-1 text-xs text-gray-500 dark:text-gray-300 cursor-pointer shadow">
+                            <input class="checkbox-buku w-3 h-3 dark:bg-gray-700 dark:border-gray-600" type="checkbox"
+                                data-id="{{ $buku->id }}" id="buku-{{ $buku->id }}">
                             Pilih
                         </label>
                         <x-buku-card :buku="$buku" :showActions="true" />
                     </div>
                 @empty
                     <div class="col-span-4">
-                        <p class="text-center text-gray-400 py-8">Tidak ada buku untuk ditampilkan.</p>
+                        <p class="text-center text-gray-400 dark:text-gray-500 py-8">Tidak ada buku untuk ditampilkan
+                            sesuai dengan filter
+                            yang dipilih.</p>
                     </div>
                 @endforelse
             </div>
 
-            @if ($bukus->count() > 0)
-                <p class="text-center text-sm text-gray-400 mt-6">
-                    Menampilkan {{ $bukus->count() }} buku
-                    @isset($kategori)
-                        dari kategori <strong>{{ $kategori }}</strong>
-                    @endisset
-                </p>
+            {{-- Pagination --}}
+            @if ($bukus->hasPages())
+                <div class="mt-6">
+                    {{ $bukus->appends(request()->query())->links() }}
+                </div>
             @endif
 
         </div>

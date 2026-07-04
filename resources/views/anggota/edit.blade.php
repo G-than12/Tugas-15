@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
             Edit Anggota: {{ $anggota->nama }}
         </h2>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-300">
 
                 <form action="{{ route('anggota.update', $anggota->id) }}" method="POST">
                     @csrf
@@ -16,12 +16,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         {{-- Kode Anggota --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Kode Anggota <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="kode_anggota"
-                                class="w-full border rounded px-3 py-2 text-sm @error('kode_anggota') border-red-500 @enderror"
-                                value="{{ old('kode_anggota', $anggota->kode_anggota) }}">
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm bg-gray-100 dark:bg-gray-900/50 dark:text-gray-300 @error('kode_anggota') border-red-500 @enderror"
+                                value="{{ old('kode_anggota', $anggota->kode_anggota) }}" readonly>
                             @error('kode_anggota')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -29,11 +29,11 @@
 
                         {{-- Nama --}}
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Nama Lengkap <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="nama"
-                                class="w-full border rounded px-3 py-2 text-sm @error('nama') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('nama') border-red-500 @enderror"
                                 value="{{ old('nama', $anggota->nama) }}">
                             @error('nama')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -44,11 +44,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         {{-- Email --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Email <span class="text-red-500">*</span>
                             </label>
                             <input type="email" name="email"
-                                class="w-full border rounded px-3 py-2 text-sm @error('email') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('email') border-red-500 @enderror"
                                 value="{{ old('email', $anggota->email) }}">
                             @error('email')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -57,11 +57,11 @@
 
                         {{-- Telepon --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Nomor Telepon <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="telepon" id="telepon"
-                                class="w-full border rounded px-3 py-2 text-sm @error('telepon') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('telepon') border-red-500 @enderror"
                                 value="{{ old('telepon', $anggota->telepon) }}">
                             @error('telepon')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -71,11 +71,11 @@
 
                     {{-- Alamat --}}
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Alamat Lengkap <span class="text-red-500">*</span>
                         </label>
                         <textarea name="alamat" rows="3"
-                            class="w-full border rounded px-3 py-2 text-sm @error('alamat') border-red-500 @enderror">{{ old('alamat', $anggota->alamat) }}</textarea>
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('alamat') border-red-500 @enderror">{{ old('alamat', $anggota->alamat) }}</textarea>
                         @error('alamat')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -84,11 +84,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         {{-- Tanggal Lahir --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Tanggal Lahir <span class="text-red-500">*</span>
                             </label>
                             <input type="date" name="tanggal_lahir"
-                                class="w-full border rounded px-3 py-2 text-sm @error('tanggal_lahir') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('tanggal_lahir') border-red-500 @enderror"
                                 value="{{ old('tanggal_lahir', $anggota->tanggal_lahir?->format('Y-m-d')) }}"
                                 max="{{ date('Y-m-d') }}">
                             @error('tanggal_lahir')
@@ -98,11 +98,11 @@
 
                         {{-- Jenis Kelamin --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Jenis Kelamin <span class="text-red-500">*</span>
                             </label>
                             <select name="jenis_kelamin"
-                                class="w-full border rounded px-3 py-2 text-sm @error('jenis_kelamin') border-red-500 @enderror">
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('jenis_kelamin') border-red-500 @enderror">
                                 <option value="">-- Pilih --</option>
                                 @foreach (['Laki-laki', 'Perempuan'] as $jk)
                                     <option value="{{ $jk }}"
@@ -118,9 +118,10 @@
 
                         {{-- Pekerjaan --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pekerjaan</label>
                             <input type="text" name="pekerjaan"
-                                class="w-full border rounded px-3 py-2 text-sm @error('pekerjaan') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('pekerjaan') border-red-500 @enderror"
                                 value="{{ old('pekerjaan', $anggota->pekerjaan) }}">
                             @error('pekerjaan')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -131,11 +132,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         {{-- Tanggal Daftar --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Tanggal Pendaftaran <span class="text-red-500">*</span>
                             </label>
                             <input type="date" name="tanggal_daftar"
-                                class="w-full border rounded px-3 py-2 text-sm @error('tanggal_daftar') border-red-500 @enderror"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('tanggal_daftar') border-red-500 @enderror"
                                 value="{{ old('tanggal_daftar', $anggota->tanggal_daftar?->format('Y-m-d')) }}"
                                 max="{{ date('Y-m-d') }}">
                             @error('tanggal_daftar')
@@ -145,11 +146,11 @@
 
                         {{-- Status --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Status <span class="text-red-500">*</span>
                             </label>
                             <select name="status"
-                                class="w-full border rounded px-3 py-2 text-sm @error('status') border-red-500 @enderror">
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2 text-sm @error('status') border-red-500 @enderror">
                                 @foreach (['Aktif', 'Nonaktif'] as $st)
                                     <option value="{{ $st }}"
                                         {{ old('status', $anggota->status) == $st ? 'selected' : '' }}>
@@ -163,12 +164,13 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between border-t pt-4">
+                    <div class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
                         <a href="{{ route('anggota.show', $anggota->id) }}"
-                            class="border border-gray-400 text-gray-600 px-4 py-2 rounded text-sm">
+                            class="border border-gray-400 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition px-4 py-2 rounded text-sm">
                             ← Kembali
                         </a>
-                        <button type="submit" class="bg-yellow-400 text-white px-6 py-2 rounded text-sm">
+                        <button type="submit"
+                            class="bg-yellow-400 hover:bg-yellow-500 transition text-white px-6 py-2 rounded text-sm">
                             Update Anggota
                         </button>
                     </div>
@@ -177,7 +179,8 @@
             </div>
 
             {{-- Info Update --}}
-            <div class="bg-white rounded-lg shadow p-4 mt-4 text-sm text-gray-500">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mt-4 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
                 Terdaftar: {{ $anggota->created_at->format('d M Y H:i') }} ·
                 Terakhir update: {{ $anggota->updated_at->format('d M Y H:i') }} ·
                 Lama anggota: {{ $anggota->lama_anggota }} hari ({{ round($anggota->lama_anggota / 365, 1) }} tahun)

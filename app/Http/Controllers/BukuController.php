@@ -11,6 +11,10 @@ use Illuminate\Validation\ValidationException;
 
 class BukuController extends Controller
 {
+    /**
+     * Jumlah buku yang ditampilkan per halaman (grid).
+     */
+    private const PER_PAGE = 8;
 
     /**
      * Endpoint AJAX: kembalikan preview kode buku berikutnya untuk kategori tertentu.
@@ -47,49 +51,26 @@ class BukuController extends Controller
         ]);
     }
 
+    /**
+     * Pencarian & filter buku (multi-kriteria), dengan pagination.
+     */
     public function search(Request $request)
     {
-        $query = Buku::query();
+        $query = $this->buildFilterQuery($request);
 
-        // 1. Filter keyword (judul, pengarang, penerbit)
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('judul',     'like', "%{$keyword}%")
-                    ->orWhere('pengarang', 'like', "%{$keyword}%")
-                    ->orWhere('penerbit',  'like', "%{$keyword}%");
-            });
-        }
+        // PENTING: hitung statistik SEBELUM paginate(), memakai clone query,
+        // supaya angkanya mencerminkan SELURUH hasil filter (bukan cuma 1 halaman).
+        $totalBuku    = (clone $query)->count();
+        $bukuTersedia = (clone $query)->where('stok', '>', 0)->count();
+        $bukuHabis    = (clone $query)->where('stok', '<=', 0)->count();
 
-        // 2. Filter kategori
-        if ($request->filled('kategori')) {
-            $query->where('kategori', $request->kategori);
-        }
-
-        // 3. Filter tahun terbit
-        if ($request->filled('tahun')) {
-            $query->where('tahun_terbit', $request->tahun);
-        }
-
-        // 4. Filter ketersediaan
-        if ($request->filled('ketersediaan')) {
-            if ($request->ketersediaan === 'tersedia') {
-                $query->where('stok', '>', 0);
-            } elseif ($request->ketersediaan === 'habis') {
-                $query->where('stok', 0);
-            }
-        }
-
-        $bukus = $query->latest()->get();
-
-        // Statistik hasil filter
-        $totalBuku    = $bukus->count();
-        $bukuTersedia = $bukus->where('stok', '>', 0)->count();
-        $bukuHabis    = $bukus->where('stok', 0)->count();
+        $bukus = $query->latest()
+            ->paginate(self::PER_PAGE)
+            ->appends($request->query());
 
         // Ambil daftar kategori & tahun untuk dropdown
-        $kategoriList = Buku::select('kategori')->distinct()->orderBy('kategori')->pluck('kategori');
-        $tahunList    = Buku::select('tahun_terbit')->distinct()->orderBy('tahun_terbit', 'desc')->pluck('tahun_terbit');
+        $kategoriList = $this->getKategoriList();
+        $tahunList    = $this->getTahunList();
 
         return view('buku.index', compact(
             'bukus',
@@ -106,15 +87,15 @@ class BukuController extends Controller
      */
     public function index()
     {
-        // Ambil semua data buku dari database
-        $bukus = Buku::latest()->get();
+        // Ambil data buku dengan pagination (8 buku per halaman)
+        $bukus = Buku::latest()->paginate(self::PER_PAGE);
 
-        // Statistik untuk card
+        // Statistik untuk card (global, seluruh data)
         $totalBuku = Buku::count();
         $bukuTersedia = Buku::where('stok', '>', 0)->count();
-        $bukuHabis = Buku::where('stok', 0)->count();
-        $kategoriList = Buku::select('kategori')->distinct()->orderBy('kategori')->pluck('kategori');
-        $tahunList    = Buku::select('tahun_terbit')->distinct()->orderBy('tahun_terbit', 'desc')->pluck('tahun_terbit');
+        $bukuHabis = Buku::where('stok', '<=', 0)->count();
+        $kategoriList = $this->getKategoriList();
+        $tahunList    = $this->getTahunList();
 
         // Return view dengan data
         return view('buku.index', compact(
@@ -222,22 +203,33 @@ class BukuController extends Controller
     }
 
     /**
-     * Filter buku berdasarkan kategori.
+     * Filter buku berdasarkan kategori (route khusus, misal /buku/kategori/Programming).
      */
     public function filterKategori($kategori)
     {
-        $bukus = Buku::where('kategori', $kategori)->latest()->get();
+        $query = Buku::where('kategori', $kategori);
 
-        $totalBuku = $bukus->count();
-        $bukuTersedia = $bukus->where('stok', '>', 0)->count();
-        $bukuHabis = $bukus->where('stok', 0)->count();
+        // Statistik dihitung dari clone query sebelum paginate, supaya akurat
+        // untuk SELURUH buku di kategori ini, bukan cuma 1 halaman.
+        $totalBuku    = (clone $query)->count();
+        $bukuTersedia = (clone $query)->where('stok', '>', 0)->count();
+        $bukuHabis    = (clone $query)->where('stok', '<=', 0)->count();
+
+        $bukus = $query->latest()
+            ->paginate(self::PER_PAGE)
+            ->appends(request()->query());
+
+        $kategoriList = $this->getKategoriList();
+        $tahunList    = $this->getTahunList();
 
         return view('buku.index', compact(
             'bukus',
             'totalBuku',
             'bukuTersedia',
             'bukuHabis',
-            'kategori'
+            'kategori',
+            'kategoriList',
+            'tahunList'
         ));
     }
 
@@ -246,9 +238,6 @@ class BukuController extends Controller
      */
     public function bulkDelete(Request $request)
     {
-        // Bug #1: hapus dd() ini
-        // dd($request->all());
-
         try {
             $request->validate([
                 'buku_ids'   => 'required|array|min:1',
@@ -266,7 +255,6 @@ class BukuController extends Controller
             return redirect()->route('buku.index')
                 ->with('success', "{$jumlah} buku berhasil dihapus!");
         } catch (ValidationException $e) {
-            // Bug #2: tangkap validasi dulu, redirect back dengan pesan yang jelas
             return redirect()->back()
                 ->with('error', 'Pilih minimal 1 buku yang ingin dihapus.');
         } catch (\Exception $e) {
@@ -274,8 +262,6 @@ class BukuController extends Controller
                 ->with('error', 'Gagal menghapus buku: ' . $e->getMessage());
         }
     }
-
-
 
     /**
      * Export seluruh data buku ke file CSV
@@ -340,5 +326,70 @@ class BukuController extends Controller
 
         // Kirim response berupa stream (tidak perlu simpan file di server)
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Helper: membangun query filter/pencarian buku berdasarkan request.
+     */
+    private function buildFilterQuery(Request $request)
+    {
+        $query = Buku::query();
+
+        // 1. Filter keyword (judul, pengarang, penerbit)
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('judul',     'like', "%{$keyword}%")
+                    ->orWhere('pengarang', 'like', "%{$keyword}%")
+                    ->orWhere('penerbit',  'like', "%{$keyword}%");
+            });
+        }
+
+        // 2. Filter kategori
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->kategori);
+        }
+
+        // 3. Filter tahun terbit (Disesuaikan dengan name form di view: "tahun_terbit")
+        if ($request->filled('tahun_terbit')) {
+            $query->where('tahun_terbit', $request->tahun_terbit);
+        }
+
+        // 4. Filter ketersediaan
+        if ($request->filled('ketersediaan')) {
+            if ($request->ketersediaan === 'tersedia') {
+                $query->where('stok', '>', 0);
+            } elseif ($request->ketersediaan === 'habis') {
+                $query->where('stok', '<=', 0);
+            }
+        }
+
+        // 5. Filter harga minimum
+        if ($request->filled('harga_min')) {
+            $query->where('harga', '>=', $request->harga_min);
+        }
+
+        // 6. Filter harga maksimum
+        if ($request->filled('harga_max')) {
+            $query->where('harga', '<=', $request->harga_max);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Helper: daftar unik kategori untuk dropdown filter.
+     */
+    private function getKategoriList()
+    {
+        return Buku::select('kategori')->distinct()->orderBy('kategori')->pluck('kategori');
+    }
+
+    /**
+     * Helper: daftar unik tahun terbit untuk dropdown filter.
+     */
+    private function getTahunList()
+    {
+        return Buku::select('tahun_terbit')->distinct()->orderBy('tahun_terbit', 'desc')->pluck('tahun_terbit');
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\SearchController;
 
 // Redirect root ke login
 Route::get('/', function () {
@@ -17,6 +18,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export', [DashboardController::class, 'exportPdf'])->name('dashboard.export');
+    Route::get('/dashboard/data', [\App\Http\Controllers\DashboardController::class, 'data'])
+        ->name('dashboard.data');
 
     // Profile (dari Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -42,6 +46,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/laporan/export', [TransaksiController::class, 'laporanExport'])->name('transaksi.laporan.export');
     Route::resource('transaksi', TransaksiController::class);
     Route::post('/transaksi/{id}/kembalikan', [TransaksiController::class, 'kembalikan'])->name('transaksi.kembalikan');
+
+
+    // search
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
 });
 
 require __DIR__ . '/auth.php';
