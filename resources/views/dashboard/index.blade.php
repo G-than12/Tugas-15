@@ -412,7 +412,7 @@
                                     </p>
                                     <p class="text-[10px] text-red-500 dark:text-red-400 font-semibold mt-1">
                                         Jatuh Tempo: {{ $terlambat->tanggal_kembali->format('d/m/Y') }}
-                                        ({{ now()->diffInDays($terlambat->tanggal_kembali) }} Hari)
+                                        ({{ (int) abs(now()->diffInDays($terlambat->tanggal_kembali)) }} Hari)
                                     </p>
                                 </div>
                             </div>

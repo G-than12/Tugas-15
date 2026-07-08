@@ -469,7 +469,15 @@
                                             class="text-[11px] font-mono tracking-wide bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">{{ $t->kode_transaksi }}</code>
                                     </td>
                                     <td class="px-4 py-3 font-medium text-gray-800 dark:text-gray-100">
-                                        {{ $t->buku->judul ?? '-' }}</td>
+                                        @if ($t->buku)
+                                            <a href="{{ route('buku.show', $t->buku->id) }}"
+                                                class="hover:text-blue-600 hover:underline transition">
+                                                {{ $t->buku->judul }}
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-gray-500">{{ $t->buku->kategori ?? '-' }}</td>
                                     <td class="px-4 py-3 text-gray-500">{{ $t->tanggal_pinjam->format('d/m/Y') }}</td>
                                     <td class="px-4 py-3 text-gray-500">{{ $t->tanggal_kembali->format('d/m/Y') }}
@@ -527,7 +535,7 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-right">
-                                        <a href="#"
+                                        <a href="{{ route('transaksi.show', $t->id) }}"
                                             class="text-blue-600 hover:text-blue-800 hover:underline text-xs font-medium">Detail</a>
                                     </td>
                                 </tr>
