@@ -14,6 +14,17 @@ Aplikasi manajemen perpustakaan berbasis **Laravel 13** untuk mengelola data buk
 ---
 
 ## 📸 Screenshots
+<img width="1731" height="864" alt="image" src="https://github.com/user-attachments/assets/234f9dd9-760c-4328-9eb5-dca7d96fe9ff" />
+<img width="1731" height="3876" alt="image" src="https://github.com/user-attachments/assets/59968e59-e63b-426e-ba12-9cf9bdaff5cb" />
+<img width="1731" height="1773" alt="image" src="https://github.com/user-attachments/assets/f8c68ecf-3e42-4fa9-b381-8506141febd7" />
+<img width="1731" height="1053" alt="image" src="https://github.com/user-attachments/assets/f007d205-61ce-4ee8-9f8c-32da91ea9e65" />
+<img width="1731" height="1158" alt="image" src="https://github.com/user-attachments/assets/d97c54c7-c606-40b9-af19-b59b0bcf2ea9" />
+<img width="1731" height="1853" alt="image" src="https://github.com/user-attachments/assets/01640ce5-f588-4dce-8e91-f63e13de4fd5" />
+<img width="1731" height="3842" alt="image" src="https://github.com/user-attachments/assets/020f53dc-c3ab-41a0-ab81-fe301210af19" />
+<img width="1731" height="1155" alt="image" src="https://github.com/user-attachments/assets/1215b264-dbfe-4137-81ed-239f05ec9db6" />
+<img width="1731" height="1089" alt="image" src="https://github.com/user-attachments/assets/597b442b-8833-4450-894d-d11144b704ed" />
+<img width="1731" height="1867" alt="image" src="https://github.com/user-attachments/assets/01070b44-3492-40ea-8db1-66b2934aeb17" />
+<img width="1731" height="1699" alt="image" src="https://github.com/user-attachments/assets/a8d44857-af93-49f9-8c21-50d563f35929" />
 
 
 ---
